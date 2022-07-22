@@ -6,8 +6,11 @@ const server = express();
 server.use(express.json());
 server.use(cors());
 
-
+// Categories
 server.use(CategoriesRouter)
+
+// Games
+server.use(GamesRouter)
 
 
 server.listen(4000, () => {
