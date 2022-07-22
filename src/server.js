@@ -1,5 +1,6 @@
 import express from 'express'
 import CategoriesRouter from './Routes/CategoriesRouter.js'
+import GamesRouter from './Routes/GamesRouter.js'
 import cors from 'cors'
 
 const server = express();
