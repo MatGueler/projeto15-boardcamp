@@ -2,7 +2,11 @@ import connection from '../dbStrategy/postgres.js'
 import joi from 'joi'
 
 export async function getGames(req, res) {
-    const { rows: games } = await connection.query('SELECT * FROM games')
+    const { rows: games } = await connection.query(`
+        SELECT games.*,categories.name as "categoryName" FROM games
+        JOIN categories
+        ON games."categoryId" = categories.id
+    `)
 
     res.send(games)
 }
@@ -27,22 +31,25 @@ export async function postGames(req, res) {
         return res.status(422).send('Categoria deve possuir um nome!')
     }
 
-    // try {
+    try {
 
-    //     const valid = await connection.query(`SELECT * FROM games`);
-    //     if (valid.rowCount === 0) {
-    //         await connection.query(`INSERT INTO categories (name) VALUES ('${name}')`);
+        const valid = await connection.query(`SELECT * FROM games WHERE name=$1`, [name]);
 
-    //         return res.status(201).send('Usuário criado!')
-    //     }
-    //     else {
-    //         return res.status(400).send('Essa categoria já existe!')
-    //     }
-    // }
-    // catch {
-    //     res.status('Deu erro!')
-    // }
+        if (valid.rowCount === 0) {
+            await connection.query(`
+            INSERT INTO games (name,image, "stockTotal", "categoryId", "pricePerDay") VALUES ('${name}','${image}','${stockTotal}','${categoryId}','${pricePerDay}')
+            `);
 
-    res.send(name)
+            return res.status(201).send('criado')
+
+        }
+        else {
+            return res.status(400).send('Esse jogo já existe!')
+        }
+
+    }
+    catch {
+        res.status('Deu erro!')
+    }
 }
 
