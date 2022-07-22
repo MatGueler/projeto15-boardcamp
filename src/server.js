@@ -13,6 +13,9 @@ server.use(CategoriesRouter)
 // Games
 server.use(GamesRouter)
 
+// Customers
+server.use(CustomersRouter)
+
 
 server.listen(4000, () => {
     // console.log("Server running on port " + process.env.PORT);

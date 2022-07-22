@@ -40,7 +40,7 @@ export async function postGames(req, res) {
             INSERT INTO games (name,image, "stockTotal", "categoryId", "pricePerDay") VALUES ('${name}','${image}','${stockTotal}','${categoryId}','${pricePerDay}')
             `);
 
-            return res.status(201).send('criado')
+            return res.status(201);
 
         }
         else {
