@@ -85,12 +85,12 @@ export async function updateCustomers(req, res) {
 
     try {
 
-        const valid = await connection.query(`SELECT * FROM customers WHERE id='${cpf}'`);
+        const valid = await connection.query(`SELECT * FROM customers WHERE cpf='${cpf}'`);
         if (valid.rowCount === 0) {
             await connection.query(`
 
-            UPDATE customers SET name=$1, phone=$2 WHERE id = $3;
-            `, [name, phone, id])
+            UPDATE customers SET name=$1, phone=$2,cpf=$3,birthday=$4 WHERE id = $5;
+            `, [name, phone, cpf, birthday, id])
 
             return res.status(201).send('Usuário atualizado!')
         }
