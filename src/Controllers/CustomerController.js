@@ -8,17 +8,15 @@ export async function getCustomers(req, res) {
     res.send(customers)
 }
 
-// Ainda não está funcionando
 export async function getCustomersId(req, res) {
 
     const { id } = req.params
 
     const { rows: customers } = await connection.query('SELECT * FROM customers WHERE id=$1', [id])
 
-    res.send(customers)
+    // TENTAR MUDAR ISSO!!!!!!!
+    res.send(customers[0])
 }
-
-
 
 export async function postCustomers(req, res) {
 
@@ -64,3 +62,43 @@ export async function postCustomers(req, res) {
     }
 }
 
+export async function updateCustomers(req, res) {
+
+    const { name, phone, cpf, birthday } = req.body
+
+    const { id } = req.params
+
+
+    const userSchema = joi.object({
+        name: joi.string().required(),
+        phone: joi.string().required().pattern((/^[0-9]{10,11}$/)),
+        cpf: joi.string().required().pattern((/^[0-9]{11}$/)),
+        birthday: joi.string().required()
+    });
+
+    const validation = userSchema.validate({ name, phone, cpf, birthday }, { abortEarly: true });
+
+    if (validation.error) {
+        console.log(validation.error.details)
+        return res.status(422).send('Dados incorretos!')
+    }
+
+    try {
+
+        const valid = await connection.query(`SELECT * FROM customers WHERE id='${cpf}'`);
+        if (valid.rowCount === 0) {
+            await connection.query(`
+
+            UPDATE customers SET name=$1, phone=$2 WHERE id = $3;
+            `, [name, phone, id])
+
+            return res.status(201).send('Usuário atualizado!')
+        }
+        else {
+            return res.status(409).send('cpf já existente!')
+        }
+    }
+    catch {
+        res.status('Deu erro!')
+    }
+}

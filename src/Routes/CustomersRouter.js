@@ -1,4 +1,4 @@
-import { getCustomers, getCustomersId, postCustomers } from '../Controllers/CustomerController.js'
+import { getCustomers, getCustomersId, postCustomers, updateCustomers } from '../Controllers/CustomerController.js'
 import { Router } from 'express'
 
 const server = Router()
@@ -6,5 +6,7 @@ const server = Router()
 server.get('/customers', getCustomers)
 server.get('/customers/:id', getCustomersId)
 server.post('/customers', postCustomers)
+server.put('/customers/:id', updateCustomers)
+
 
 export default server;
