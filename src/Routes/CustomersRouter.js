@@ -1,4 +1,4 @@
-import { getCustomers, getCustomersId, postCustomers, updateCustomers } from '../Controllers/CustomerController.js'
+import { getCustomers, getCustomersId, postCustomers, updateCustomers } from '../Controllers/CustomersController.js'
 import { Router } from 'express'
 
 const server = Router()
