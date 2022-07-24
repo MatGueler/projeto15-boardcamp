@@ -1,4 +1,5 @@
 import connection from '../dbStrategy/postgres.js'
+import dayjs from 'dayjs'
 import joi from 'joi'
 
 export async function getRentals(req, res) {
@@ -42,18 +43,23 @@ export async function postRentals(req, res) {
             return res.sendStatus(400);
 
         }
-        else {
-            const { rows: games } = await connection.query(`
+        const { rows: games } = await connection.query(`
             SELECT * FROM games WHERE id=$1
         `, [gameId]);
 
-            const pricePerDay = games[0].pricePerDay
-            const originalPrice = pricePerDay * daysRented
+        const pricePerDay = games[0].pricePerDay
+        const originalPrice = pricePerDay * daysRented
+        const rentDate = dayjs().format('YYYY-MM-DD')
+        const returnDate = null
+        const delayFee = null
 
-            console.log(originalPrice)
 
-            return res.status(201).send('deubom')
-        }
+        await connection.query(`
+        INSERT INTO rentals ("customerId","gameId","rentDate","daysRented","returnDate","originalPrice","delayFee")
+        VALUES ('${customerId}','${gameId}','${rentDate}','${daysRented}','${returnDate}','${originalPrice}','${delayFee}')`);
+
+        return res.sendStatus(201)
+
 
     }
     catch {
