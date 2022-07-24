@@ -1,9 +1,9 @@
-import { getRentals } from '../Controllers/GamesController.js'
+import { getRentals, postRentals } from '../Controllers/RentalsController.js'
 import { Router } from 'express'
 
 const server = Router()
 
-server.get('/games', getRentals)
-// server.post('/games', postGames)
+server.get('/rentals', getRentals)
+server.post('/rentals', postRentals)
 
 export default server;

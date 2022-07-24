@@ -9,45 +9,55 @@ export async function getRentals(req, res) {
     res.send(rentals)
 }
 
-// export async function postGames(req, res) {
+export async function postRentals(req, res) {
 
-//     const { name, image, stockTotal, categoryId, pricePerDay } = req.body
+    const { customerId, gameId, daysRented } = req.body
 
 
-//     const userSchema = joi.object({
-//         name: joi.string().required(),
-//         image: joi.required(),
-//         stockTotal: joi.number().required(),
-//         categoryId: joi.number().required(),
-//         pricePerDay: joi.number().required()
-//     });
+    const userSchema = joi.object({
+        customerId: joi.number().required(),
+        gameId: joi.number().required(),
+        daysRented: joi.number().required()
+    });
 
-//     const validation = userSchema.validate({ name, image, stockTotal, categoryId, pricePerDay }, { abortEarly: true });
+    const validation = userSchema.validate({ customerId, gameId, daysRented }, { abortEarly: true });
 
-//     if (validation.error) {
-//         console.log(validation.error.details)
-//         return res.status(422).send('Categoria deve possuir um nome!')
-//     }
+    if (validation.error) {
+        console.log(validation.error.details)
+        return res.status(422).send('Campos devem ser preenchidos corretamente!')
+    }
 
-//     try {
+    try {
 
-//         const valid = await connection.query(`SELECT * FROM games WHERE name=$1`, [name]);
+        const validCustomer = await connection.query(`SELECT * FROM customers WHERE id=$1`, [customerId]);
 
-//         if (valid.rowCount === 0) {
-//             await connection.query(`
-//             INSERT INTO games (name,image, "stockTotal", "categoryId", "pricePerDay") VALUES ('${name}','${image}','${stockTotal}','${categoryId}','${pricePerDay}')
-//             `);
+        const validGame = await connection.query(`SELECT * FROM games WHERE id=$1`, [gameId]);
 
-//             return res.status(201);
+        const notCustomer = validCustomer.rowCount === 0;
+        const notGame = validGame.rowCount === 0;
+        const invalidNumber = daysRented <= 0;
 
-//         }
-//         else {
-//             return res.status(400).send('Esse jogo já existe!')
-//         }
+        if (notCustomer || notGame || invalidNumber) {
 
-//     }
-//     catch {
-//         res.status('Deu erro!')
-//     }
-// }
+            return res.sendStatus(400);
+
+        }
+        else {
+            const { rows: games } = await connection.query(`
+            SELECT * FROM games WHERE id=$1
+        `, [gameId]);
+
+            const pricePerDay = games[0].pricePerDay
+            const originalPrice = pricePerDay * daysRented
+
+            console.log(originalPrice)
+
+            return res.status(201).send('deubom')
+        }
+
+    }
+    catch {
+        res.status('Deu erro!')
+    }
+}
 
