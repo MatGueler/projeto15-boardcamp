@@ -3,9 +3,25 @@ import joi from 'joi'
 
 export async function getCustomers(req, res) {
 
-    const { rows: customers } = await connection.query('SELECT * FROM customers')
+    let { cpf } = req.query
 
-    res.send(customers)
+    if (cpf) {
+
+        cpf = cpf.toLowerCase()
+
+        const { rows: customers } = await connection.query(`
+            SELECT * FROM customers
+            WHERE lower(customers.cpf) LIKE $1
+            `, [cpf + "%"])
+
+        return res.send(customers)
+    }
+    else {
+        const { rows: customers } = await connection.query(`
+            SELECT * FROM customers
+        `)
+        return res.send(customers)
+    }
 }
 
 export async function getCustomersId(req, res) {
@@ -14,8 +30,12 @@ export async function getCustomersId(req, res) {
 
     const { rows: customers } = await connection.query('SELECT * FROM customers WHERE id=$1', [id])
 
-    // TENTAR MUDAR ISSO!!!!!!!
-    res.send(customers[0])
+    if (customers[0]) {
+        return res.send(customers[0])
+    }
+    else {
+        return res.send(400)
+    }
 }
 
 export async function postCustomers(req, res) {
@@ -39,17 +59,17 @@ export async function postCustomers(req, res) {
 
     try {
 
-        const valid = await connection.query(`SELECT * FROM customers WHERE cpf='${cpf}'`);
+        const valid = await connection.query(`SELECT * FROM customers WHERE cpf = '${cpf}'`);
         if (valid.rowCount === 0) {
-            await connection.query(`INSERT INTO customers (
+            await connection.query(`INSERT INTO customers(
 
-                    name,phone, cpf, birthday
+            name, phone, cpf, birthday
 
-                ) VALUES (
+        ) VALUES(
 
-                    '${name}','${phone}', '${cpf}', '${birthday}'
+            '${name}', '${phone}', '${cpf}', '${birthday}'
 
-                )`);
+        )`);
 
             return res.status(201).send('Usuário criado!')
         }
@@ -85,12 +105,12 @@ export async function updateCustomers(req, res) {
 
     try {
 
-        const valid = await connection.query(`SELECT * FROM customers WHERE cpf='${cpf}'`);
+        const valid = await connection.query(`SELECT * FROM customers WHERE cpf = '${cpf}'`);
         if (valid.rowCount === 0) {
             await connection.query(`
 
-            UPDATE customers SET name=$1, phone=$2,cpf=$3,birthday=$4 WHERE id = $5;
-            `, [name, phone, cpf, birthday, id])
+            UPDATE customers SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE id = $5;
+    `, [name, phone, cpf, birthday, id])
 
             return res.status(201).send('Usuário atualizado!')
         }
