@@ -22,7 +22,6 @@ server.use(CustomersRouter)
 server.use(RentalsRouter)
 
 
-server.listen(4000, () => {
-    // console.log("Server running on port " + process.env.PORT);
-    console.log("Server running on port ");
+server.listen(process.env.PORT, () => {
+    console.log("Server running on port " + process.env.PORT);
 });
