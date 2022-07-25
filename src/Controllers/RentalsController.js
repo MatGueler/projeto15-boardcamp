@@ -140,3 +140,16 @@ export async function postRentals(req, res) {
     }
 }
 
+export async function deleteRentals(req, res) {
+
+
+    const { id } = req.params
+
+    const { rows: deleteId } = await connection.query(`
+            DELETE FROM rentals
+            WHERE id=$1
+`, [id])
+
+    res.send(deleteId)
+}
+
