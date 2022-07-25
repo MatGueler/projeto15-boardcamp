@@ -2,13 +2,36 @@ import connection from '../dbStrategy/postgres.js'
 import joi from 'joi'
 
 export async function getGames(req, res) {
-    const { rows: games } = await connection.query(`
-        SELECT games.*,categories.name as "categoryName" FROM games
-        JOIN categories
-        ON games."categoryId" = categories.id
-    `)
 
-    res.send(games)
+    let query = req.query.name
+
+    if (query) {
+        console.log('existe')
+
+        query = query.toLowerCase();
+
+        const { rows: games } = await connection.query(`
+                SELECT games.*,categories.name as "categoryName" FROM games
+                JOIN categories
+                ON games."categoryId" = categories.id
+                WHERE lower(games.name) LIKE $1
+            `, [query + "%"])
+        return res.send(games)
+    }
+    else {
+
+        try {
+            const { rows: games } = await connection.query(`
+                SELECT games.*,categories.name as "categoryName" FROM games
+                JOIN categories
+                ON games."categoryId" = categories.id
+            `)
+            return res.send(games)
+        }
+        catch {
+            return res.send(400)
+        }
+    }
 }
 
 export async function postGames(req, res) {
