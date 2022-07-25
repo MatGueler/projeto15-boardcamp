@@ -128,20 +128,11 @@ export async function postRentals(req, res) {
         const originalPrice = pricePerDay * daysRented
         const rentDate = dayjs().format('YYYY-MM-DD')
 
-        console.log(originalPrice)
+        await connection.query(`
+        INSERT INTO rentals ("customerId","gameId","rentDate","daysRented","originalPrice")
+        VALUES (${customerId},${gameId},'${rentDate}',${daysRented},${originalPrice})`);
 
-
-        // await connection.query(`
-        // INSERT INTO rentals ("customerId","gameId","rentDate","daysRented","originalPrice")
-        // VALUES ('$1','$2','$3','$4','$5')`,
-        //     [customerId, gameId, rentDate, daysRented, originalPrice]);
-
-        // await connection.query(`
-        // INSERT INTO rentals ("customerId","gameId","rentDate","daysRented","originalPrice")
-        // VALUES ('${customerId}','${gameId}','${rentDate}','${daysRented}','${originalPrice}')`);
-
-        return res.send(rentals)
-
+        return res.send(201)
 
     }
     catch {
