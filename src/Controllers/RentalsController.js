@@ -4,18 +4,18 @@ import joi from 'joi'
 
 export async function getRentals(req, res) {
 
-    const query = req.query.customerId
+    let queryCustomer = req.query.customerId
 
-    if (query) {
+    if (queryCustomer) {
 
         const { rows: rentals } = await connection.query(`
-            SELECT rentals.*,customers.id,customers.name as "nameCustomer",games.id as "idGame",games.name,games."categoryId", categories.name as "categoryName" FROM rentals
+            SELECT rentals.*,customers.name as "nameCustomer",games.id as "idGame",games.name,games."categoryId", categories.name as "categoryName" FROM rentals
             JOIN customers
             ON customers.id = rentals."customerId"
             JOIN games
             ON games.id = rentals."gameId"
             JOIN categories
-            ON categories.id = games."categoryId"
+            ON categories.id = games."categoryId"     
 `)
 
         const newRentals = rentals.map((item) => {
@@ -47,7 +47,7 @@ export async function getRentals(req, res) {
     }
     else {
         const { rows: rentals } = await connection.query(`
-            SELECT rentals.*,customers.id,customers.name as "nameCustomer",games.id as "idGame",games.name,games."categoryId", categories.name as "categoryName" FROM rentals
+            SELECT rentals.*,customers.name as "nameCustomer",games.id as "idGame",games.name,games."categoryId", categories.name as "categoryName" FROM rentals
             JOIN customers
             ON customers.id = rentals."customerId"
             JOIN games

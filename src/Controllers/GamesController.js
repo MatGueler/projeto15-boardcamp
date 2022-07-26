@@ -6,7 +6,6 @@ export async function getGames(req, res) {
     let query = req.query.name
 
     if (query) {
-        console.log('existe')
 
         query = query.toLowerCase();
 
