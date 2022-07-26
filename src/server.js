@@ -3,7 +3,10 @@ import CategoriesRouter from './Routes/CategoriesRouter.js'
 import GamesRouter from './Routes/GamesRouter.js'
 import CustomersRouter from './Routes/CustomersRouter.js'
 import RentalsRouter from './Routes/RentalsRouter.js'
+import dotenv from 'dotenv'
 import cors from 'cors'
+
+dotenv.config();
 
 const server = express();
 server.use(express.json());
