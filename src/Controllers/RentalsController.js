@@ -1,5 +1,6 @@
 import connection from '../dbStrategy/postgres.js'
 import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime.js'
 import joi from 'joi'
 
 export async function getRentals(req, res) {
@@ -7,6 +8,8 @@ export async function getRentals(req, res) {
     let queryCustomer = req.query.customerId
 
     if (queryCustomer) {
+
+        queryCustomer = queryCustomer.toLowerCase();
 
         const { rows: rentals } = await connection.query(`
             SELECT rentals.*,customers.name as "nameCustomer",games.id as "idGame",games.name,games."categoryId", categories.name as "categoryName" FROM rentals
@@ -137,6 +140,28 @@ export async function postRentals(req, res) {
     }
     catch {
         res.status('Deu erro!')
+    }
+}
+
+export async function finishRentals(req, res) {
+
+    const id = req.params.id
+
+    dayjs.extend(relativeTime)
+
+    try {
+        const { rows: rentals } = await connection.query(`
+            SELECT * FROM rentals
+            WHERE rentals.id = $1
+            `, [id])
+
+        let a = dayjs().from(dayjs('2022-06-01'), true)
+        console.log((a))
+
+        return res.sendStatus(200)
+    }
+    catch {
+        return res.sendStatus(400)
     }
 }
 
